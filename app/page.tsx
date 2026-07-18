@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { SiteFooter, SiteHeader } from "./site-chrome";
+import { getPublishedPosts } from "../lib/content";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const posts = await getPublishedPosts(2);
   return (
     <main>
       <SiteHeader />
@@ -57,12 +61,7 @@ export default function Home() {
           <div><p className="eyebrow">From the author’s desk</p><h2>Latest dispatches</h2></div>
           <Link className="text-link" href="/blog">All dispatches <span>→</span></Link>
         </div>
-        <div className="post-grid">
-          <Link className="post-card featured-post" href="/blog/welcome-to-velmara">
-            <span className="post-number">01</span><div><p className="post-meta">Worldbuilding · 4 min read</p><h3>Welcome to Velmara</h3><p>A first look at the magic, mysteries, and mischief behind the Mada Mariner series.</p></div><span className="arrow">↗</span>
-          </Link>
-          <article className="post-card upcoming"><span className="post-number">02</span><div><p className="post-meta">Behind the book</p><h3>The story behind the pendant</h3><p>Coming soon</p></div></article>
-        </div>
+        <div className="post-grid">{posts.map((post, index) => <Link className="post-card featured-post" href={`/blog/${post.slug}`} key={post.id}><span className="post-number">{String(index + 1).padStart(2, "0")}</span><div><p className="post-meta">{post.category} · {post.read_minutes} min read</p><h3>{post.title}</h3><p>{post.excerpt}</p></div><span className="arrow">↗</span></Link>)}</div>
       </section>
       <SiteFooter />
     </main>
